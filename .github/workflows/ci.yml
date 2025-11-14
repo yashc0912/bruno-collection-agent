@@ -31,6 +31,13 @@ jobs:
     - name: Install Playwright browsers
       run: npx playwright install --with-deps
     
+    - name: Start Web UI server
+      run: |
+        node web-ui/server.js &
+        sleep 5
+        curl http://localhost:3001 || echo "Server starting..."
+        sleep 2
+    
     - name: Run tests
       run: npm test
     
