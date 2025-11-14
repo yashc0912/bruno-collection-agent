@@ -1,0 +1,38 @@
+{
+  "collectionName": "Example API Collection",
+  "apiUrl": "https://api.example.com/v1/resource/{id}",
+  "httpMethod": "GET",
+  "authType": "basic",
+  "basicAuth": {
+    "username": "your-username",
+    "password": "your-password"
+  },
+  "dbConfig": {
+    "user": "db-username",
+    "password": "db-password",
+    "server": "db-server.example.com",
+    "database": "ExampleDB",
+    "options": {
+      "encrypt": true,
+      "trustServerCertificate": false
+    }
+  },
+  "dataQueries": [
+    {
+      "name": "Example Query 1",
+      "endpoint": "/example-data",
+      "query": "SELECT 'example_value' AS VALUE, 'ExampleKey' AS [KEY]"
+    },
+    {
+      "name": "Example Query 2",
+      "endpoint": "/another-example",
+      "query": "SELECT TOP 5 ColumnName FROM TableName WHERE Condition = 'Value'"
+    }
+  ],
+  "headers": {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  },
+  "timeout": 30000,
+  "maxScenarios": 10
+}

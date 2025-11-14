@@ -1,0 +1,52 @@
+{
+  "name": "bruno-collection-generator",
+  "version": "2.0.0",
+  "description": "AI-Powered Bruno API Test Collection Generator with Web UI and In-Memory Storage",
+  "main": "bruno-collection-generator.js",
+  "scripts": {
+    "start": "node web-ui/server.js",
+    "test": "npx playwright test",
+    "test:ui": "npx playwright test tests/web-ui-sanity.spec.js",
+    "generate": "node generate-bruno-collection.js"
+  },
+  "keywords": [
+    "bruno",
+    "api-testing",
+    "test-automation",
+    "playwright",
+    "mssql",
+    "api",
+    "testing",
+    "qa",
+    "automation",
+    "bruno-api",
+    "test-generator",
+    "database-testing",
+    "e2e-testing"
+  ],
+  "author": {
+    "name": "Yash Choubey",
+    "url": "https://github.com/yashc0912"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yashc0912/bruno-collection-generator.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yashc0912/bruno-collection-generator/issues"
+  },
+  "homepage": "https://github.com/yashc0912/bruno-collection-generator#readme",
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "mssql": "^12.1.0",
+    "uuid": "^13.0.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.1"
+  }
+}

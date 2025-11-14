@@ -1,0 +1,61 @@
+# Node modules
+node_modules/
+package-lock.json
+
+# Generated files (in-memory storage now, no disk files)
+bruno-generated/
+web-ui/bruno-generated/
+
+# Test results
+test-results/
+playwright-report/
+web-ui/test-results/
+web-ui/playwright-report/
+
+# Generated tests
+tests/generated/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Sensitive configuration files
+*-config.json
+!examples/sample-config.json
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+.playwright-mcp/
+
+# Backup files
+*_OLD.md
+*.bak
+
+# Build outputs
+dist/
+build/
+
+# Coverage reports
+coverage/
+.nyc_output/

@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bruno Collection Generator - Web UI</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🤖 Bruno Collection Generator</h1>
+            <p class="subtitle">Generate complete API test collections with zero coding</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Progress Steps -->
+            <div class="progress-steps">
+                <div class="step active" data-step="1">
+                    <div class="step-number">1</div>
+                    <div class="step-label">Collection Info</div>
+                </div>
+                <div class="step" data-step="2">
+                    <div class="step-number">2</div>
+                    <div class="step-label">Database & Queries</div>
+                </div>
+                <div class="step" data-step="3">
+                    <div class="step-number">3</div>
+                    <div class="step-label">Test Scenarios</div>
+                </div>
+                <div class="step" data-step="4">
+                    <div class="step-number">4</div>
+                    <div class="step-label">Assertions</div>
+                </div>
+                <div class="step" data-step="5">
+                    <div class="step-number">5</div>
+                    <div class="step-label">Authentication</div>
+                </div>
+                <div class="step" data-step="6">
+                    <div class="step-number">6</div>
+                    <div class="step-label">Generate</div>
+                </div>
+            </div>
+
+            <!-- Step 1: Collection Information -->
+            <div class="form-section active" id="step1">
+                <h2>📋 Collection Information</h2>
+                
+                <div class="form-group">
+                    <label for="collectionName">Collection Name *</label>
+                    <input type="text" id="collectionName" placeholder="e.g., Get Customer Summary" required>
+                    <small>This will be the name of your Bruno collection</small>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="nextStep(1)">Next Step →</button>
+                </div>
+            </div>
+
+            <!-- Step 2: Database & Queries -->
+            <div class="form-section" id="step2">
+                <h2>🗄️ Database & Queries</h2>
+                
+                <div class="form-group">
+                    <label for="jdbcUrl">Database JDBC URL *</label>
+                    <input type="text" id="jdbcUrl" placeholder="jdbc:sqlserver://server:port;databaseName=dbname" required>
+                    <small>Enter your database JDBC connection string</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="dbUsername">Database Username *</label>
+                    <input type="text" id="dbUsername" placeholder="username" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="dbPassword">Database Password *</label>
+                    <div class="input-with-button">
+                        <input type="password" id="dbPassword" placeholder="password" required>
+                        <button type="button" class="btn btn-small" onclick="toggleDbPassword()">👁️ Show</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <button class="btn btn-info" onclick="testDatabaseConnection()">🔍 Test Database Connection</button>
+                    <div id="dbConnectionStatus" class="connection-status"></div>
+                </div>
+
+                <div class="form-group">
+                    <h3>🎲 Variable Generators</h3>
+                    <p class="info-text">
+                        <strong>Generate dynamic values:</strong> Create random dates, correlation IDs, and other values.<br>
+                        <strong>Usage:</strong> These variables can be used in your test scenarios with {{Variable_Name}}
+                    </p>
+                    <div id="variableGeneratorsContainer"></div>
+                    <button type="button" class="btn btn-secondary" onclick="addVariableGenerator()">+ Add Variable Generator</button>
+                </div>
+
+                <div class="form-group">
+                    <h3>📊 Database Queries (Key-Value Pairs)</h3>
+                    <p class="info-text">
+                        <strong>Query Format:</strong> Each query should return results with 'KEY' and 'VALUE' columns.<br>
+                        <strong>Example:</strong> SELECT MAX(COLUMN) AS VALUE, 'Variable_Name' AS KEY FROM TABLE
+                    </p>
+                    <div id="queriesContainer"></div>
+                    <button type="button" class="btn btn-secondary" onclick="addQuery()">+ Add Query</button>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="prevStep(2)">← Previous</button>
+                    <button class="btn btn-primary" onclick="nextStep(2)">Next Step →</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Test Scenarios -->
+            <div class="form-section" id="step3">
+                <h2>🧪 Test Scenarios</h2>
+                
+                <div class="form-group">
+                    <h3>API Test Scenarios</h3>
+                    <p class="info-text">
+                        <strong>Variables from Database:</strong> Use {{KEY_NAME}} in your request to reference database query results.<br>
+                        <strong>Generated Variables:</strong> Use {{Variable_Name}} to reference generated values (dates, IDs, etc).<br>
+                        <strong>Example:</strong> If your query returns KEY='Contract_DA', use {{Contract_DA}} in the request.<br>
+                        <strong>Generated Example:</strong> Use {{CurrentDate}} or {{correlationId}} for generated values.
+                    </p>
+                    
+                    <!-- CSV Upload Section -->
+                    <div class="csv-upload-section" style="margin-bottom: 20px; padding: 15px; border: 2px dashed #ddd; border-radius: 8px;">
+                        <h4>📄 Upload Scenarios from CSV</h4>
+                        <p class="info-text">
+                            Upload a CSV file with columns: <strong>scenario_name</strong>, <strong>scenario_type</strong>, <strong>request_body</strong>
+                        </p>
+                        <div class="file-upload-container">
+                            <input type="file" id="csvScenariosFile" accept=".csv" onchange="handleCSVUpload(this)" style="margin-bottom: 10px;">
+                            <button type="button" class="btn btn-info" onclick="downloadCSVTemplate()">📥 Download CSV Template</button>
+                            <div id="csvUploadStatus" style="margin-top: 10px;"></div>
+                        </div>
+                        <div id="csvScenariosPreview" style="margin-top: 15px; display: none;">
+                            <h5>📋 CSV Scenarios Preview:</h5>
+                            <div id="csvScenariosTable"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Manual Scenario Entry Section -->
+                    <div class="manual-scenarios-section">
+                        <h4>✋ Or Add Scenarios Manually</h4>
+                    
+                    <!-- Available Variables Reference -->
+                    <div id="availableVariables" class="variable-reference" style="display: none;">
+                        <h4>📋 Available Variables</h4>
+                        <div class="variable-list">
+                            <div id="dbVariables" class="variable-category">
+                                <h5>🗄️ Database Variables:</h5>
+                                <div id="dbVariablesList" class="variable-items"></div>
+                            </div>
+                            <div id="generatedVariables" class="variable-category">
+                                <h5>🎲 Generated Variables:</h5>
+                                <div id="generatedVariablesList" class="variable-items"></div>
+                            </div>
+                        </div>
+                        <small class="help-text">Click on any variable to copy it to clipboard</small>
+                    </div>
+                    
+                    <div id="scenariosContainer"></div>
+                    <button type="button" class="btn btn-secondary" onclick="addScenario()">+ Add Scenario</button>
+                    </div> <!-- End manual-scenarios-section -->
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="prevStep(3)">← Previous</button>
+                    <button class="btn btn-primary" onclick="nextStep(3)">Next Step →</button>
+                </div>
+            </div>
+
+            <!-- Step 4: Test Assertions -->
+            <div class="form-section" id="step4">
+                <h2>✅ Test Assertions</h2>
+                
+                <div class="form-group">
+                    <h3>Response Validation Rules</h3>
+                    <p class="info-text">
+                        Define how to validate API responses for your test scenarios.
+                        These assertions will be applied to each scenario from your CSV.
+                    </p>
+                    
+                    <div id="assertionsContainer">
+                        <div class="assertion-item">
+                            <h4>Default Assertions</h4>
+                            <div class="assertion-group">
+                                <label>
+                                    <input type="checkbox" checked> Status Code = 200
+                                </label>
+                            </div>
+                            <div class="assertion-group">
+                                <label>
+                                    <input type="checkbox" checked> Response Time < 5000ms
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="button" class="btn btn-secondary" onclick="addAssertion()">+ Add Custom Assertion</button>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="prevStep(4)">← Previous</button>
+                    <button class="btn btn-primary" onclick="nextStep(4)">Next Step →</button>
+                </div>
+            </div>
+
+            <!-- Step 5: Authentication -->
+            <div class="form-section" id="step5">
+                <h2>🔐 Authentication</h2>
+                
+                <div class="form-group">
+                    <label for="authType">Authentication Type *</label>
+                    <select id="authType" onchange="toggleAuthFields()">
+                        <option value="none">None</option>
+                        <option value="basic" selected>Basic Auth</option>
+                        <option value="bearer">Bearer Token</option>
+                    </select>
+                </div>
+
+                <div id="basicAuthFields">
+                    <div class="form-group">
+                        <label for="username">Username *</label>
+                        <input type="text" id="username" placeholder="API Username">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password *</label>
+                        <div class="input-with-button">
+                            <input type="password" id="password" placeholder="API Password">
+                            <button type="button" class="btn btn-small" onclick="togglePassword()">👁️ Show</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="bearerTokenFields" style="display: none;">
+                    <div class="form-group">
+                        <label for="bearerToken">Bearer Token *</label>
+                        <input type="text" id="bearerToken" placeholder="your-token-here">
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="prevStep(5)">← Previous</button>
+                    <button class="btn btn-primary" onclick="nextStep(5)">Generate Collection →</button>
+                </div>
+            </div>
+
+            <!-- Step 6: Generate & Download -->
+            <div class="form-section" id="step6">
+                <h2>✨ Generate Your Collection</h2>
+                
+                <div class="preview-container">
+                    <h3>Configuration Preview</h3>
+                    <pre id="configPreview"></pre>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="prevStep(6)">← Back to Edit</button>
+                    <button class="btn btn-primary btn-large" onclick="generateCollection()">
+                        🚀 Generate Collection
+                    </button>
+                </div>
+
+                <div id="generationStatus" style="display: none;">
+                    <div class="status-message">
+                        <div class="spinner"></div>
+                        <p>Generating your Bruno collection...</p>
+                    </div>
+                </div>
+
+                <div id="generationResult" style="display: none;">
+                    <div class="success-message">
+                        <h3>✅ Collection Generated Successfully!</h3>
+                        <p>Your Bruno collection is ready to download</p>
+                        
+                        <div class="download-section">
+                            <button class="btn btn-success" onclick="downloadFile('collection')">
+                                📥 Download Collection JSON
+                            </button>
+                            <button class="btn btn-success" onclick="downloadFile('app')">
+                                📥 Download app.js
+                            </button>
+                            <button class="btn btn-success" onclick="downloadFile('package')">
+                                📥 Download package.json
+                            </button>
+                            <button class="btn btn-success" onclick="downloadFile('instructions')">
+                                📄 Download Setup Instructions
+                            </button>
+                            <button class="btn btn-success" onclick="downloadFile('all')">
+                                📦 Download All Files
+                            </button>
+                        </div>
+
+                        <div class="troubleshooting-section" style="margin-top: 20px;">
+                            <p><strong>Having trouble with downloads?</strong></p>
+                            <button class="btn btn-warning" onclick="showDownloadHelp()">
+                                🔧 Download Troubleshooting
+                            </button>
+                            <button class="btn btn-info" onclick="runDiagnostics()">
+                                🔍 Run Diagnostics
+                            </button>
+                        </div>
+
+                        <div class="next-steps">
+                            <h4>📋 Next Steps:</h4>
+                            <ol>
+                                <li>Download all files</li>
+                                <li>Extract to a folder</li>
+                                <li>Run: <code>npm install</code> in the folder</li>
+                                <li>Run: <code>node app.js</code> to start database server</li>
+                                <li>Import the JSON file into Bruno</li>
+                                <li>Run your tests!</li>
+                            </ol>
+                        </div>
+
+                        <button class="btn btn-primary" onclick="resetForm()">
+                            🔄 Generate Another Collection
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <footer>
+            <p>🤖 Powered by AI Test Automation System | Version 1.0.0</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
