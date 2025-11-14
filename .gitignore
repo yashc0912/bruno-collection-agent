@@ -1,6 +1,5 @@
 # Node modules
 node_modules/
-package-lock.json
 
 # Generated files (in-memory storage now, no disk files)
 bruno-generated/
